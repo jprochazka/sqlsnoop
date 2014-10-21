@@ -37,6 +37,8 @@
             this.lstDatabases = new System.Windows.Forms.ListBox();
             this.lblDatabaseList = new System.Windows.Forms.Label();
             this.lnkRefreshDatabaseList = new System.Windows.Forms.LinkLabel();
+            this.lblVersion = new System.Windows.Forms.Label();
+            this.lblSqlServerName = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -118,11 +120,32 @@
             this.lnkRefreshDatabaseList.Text = "Refresh";
             this.lnkRefreshDatabaseList.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkRefreshDatabaseList_LinkClicked);
             // 
+            // lblVersion
+            // 
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.Location = new System.Drawing.Point(198, 67);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(52, 13);
+            this.lblVersion.TabIndex = 8;
+            this.lblVersion.Text = "lblVersion";
+            // 
+            // lblSqlServerName
+            // 
+            this.lblSqlServerName.AutoSize = true;
+            this.lblSqlServerName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSqlServerName.Location = new System.Drawing.Point(198, 47);
+            this.lblSqlServerName.Name = "lblSqlServerName";
+            this.lblSqlServerName.Size = new System.Drawing.Size(121, 17);
+            this.lblSqlServerName.TabIndex = 7;
+            this.lblSqlServerName.Text = "lblSqlServerName";
+            // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(948, 520);
+            this.Controls.Add(this.lblVersion);
+            this.Controls.Add(this.lblSqlServerName);
             this.Controls.Add(this.lnkRefreshDatabaseList);
             this.Controls.Add(this.lblDatabaseList);
             this.Controls.Add(this.lstDatabases);
@@ -148,5 +171,7 @@
         private System.Windows.Forms.ListBox lstDatabases;
         private System.Windows.Forms.Label lblDatabaseList;
         private System.Windows.Forms.LinkLabel lnkRefreshDatabaseList;
+        private System.Windows.Forms.Label lblVersion;
+        private System.Windows.Forms.Label lblSqlServerName;
     }
 }
