@@ -17,6 +17,13 @@ namespace SQLSnoop
         public Dashboard()
         {
             InitializeComponent();
+
+            // Open the Form named Connect where SQL Server connection information is obtained from.
+            Connect connectForm = new Connect();
+            connectForm.ShowDialog();
+
+            // Get the connString variable containing the connection string built using the from connectForm.
+            connString = connectForm.connString;
         }
 
         #region MenuStrip

@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.Sql;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SQLSnoop
@@ -55,6 +48,9 @@ namespace SQLSnoop
         {
             if ((string)cmbServerName.SelectedItem == "<Search for SQL Server Instances>")
             {
+                // Display searching text.
+                cmbServerName.Text = "Searching for SQL Server instances...";
+
                 // Remove all currently listed items from the ComboBox.
                 cmbServerName.Items.Clear();
 
@@ -71,6 +67,7 @@ namespace SQLSnoop
 
                 // Add the search option back into the ComboBox.
                 cmbServerName.Items.Add("<Search for SQL Server Instances>");
+                cmbServerName.Text = "";
                 cmbServerName.DroppedDown = true;
             }
         }
@@ -89,10 +86,10 @@ namespace SQLSnoop
                 // The connection to the SQL Server succeeded.
                 MessageBox.Show("Connection Successful.", "Connection Test Results", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch (Exception test)
+            catch (Exception ex)
             {
                 // The connection to the SQL Server failed.
-                MessageBox.Show(test.Message, "Connection Test Results", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(ex.Message, "Connection Test Results", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             finally
             {
