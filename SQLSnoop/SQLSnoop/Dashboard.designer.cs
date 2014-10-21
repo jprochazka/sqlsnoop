@@ -34,6 +34,9 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutSQLSnoopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lstDatabases = new System.Windows.Forms.ListBox();
+            this.lblDatabaseList = new System.Windows.Forms.Label();
+            this.lnkRefreshDatabaseList = new System.Windows.Forms.LinkLabel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,11 +89,43 @@
             this.aboutSQLSnoopToolStripMenuItem.Text = "&About SQLSnoop";
             this.aboutSQLSnoopToolStripMenuItem.Click += new System.EventHandler(this.aboutSQLSnoopToolStripMenuItem_Click);
             // 
+            // lstDatabases
+            // 
+            this.lstDatabases.FormattingEnabled = true;
+            this.lstDatabases.Location = new System.Drawing.Point(12, 47);
+            this.lstDatabases.Name = "lstDatabases";
+            this.lstDatabases.Size = new System.Drawing.Size(169, 459);
+            this.lstDatabases.TabIndex = 1;
+            // 
+            // lblDatabaseList
+            // 
+            this.lblDatabaseList.AutoSize = true;
+            this.lblDatabaseList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDatabaseList.Location = new System.Drawing.Point(12, 31);
+            this.lblDatabaseList.Name = "lblDatabaseList";
+            this.lblDatabaseList.Size = new System.Drawing.Size(67, 13);
+            this.lblDatabaseList.TabIndex = 2;
+            this.lblDatabaseList.Text = "Databases";
+            // 
+            // lnkRefreshDatabaseList
+            // 
+            this.lnkRefreshDatabaseList.AutoSize = true;
+            this.lnkRefreshDatabaseList.Location = new System.Drawing.Point(137, 31);
+            this.lnkRefreshDatabaseList.Name = "lnkRefreshDatabaseList";
+            this.lnkRefreshDatabaseList.Size = new System.Drawing.Size(44, 13);
+            this.lnkRefreshDatabaseList.TabIndex = 3;
+            this.lnkRefreshDatabaseList.TabStop = true;
+            this.lnkRefreshDatabaseList.Text = "Refresh";
+            this.lnkRefreshDatabaseList.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkRefreshDatabaseList_LinkClicked);
+            // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(948, 520);
+            this.Controls.Add(this.lnkRefreshDatabaseList);
+            this.Controls.Add(this.lblDatabaseList);
+            this.Controls.Add(this.lstDatabases);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Dashboard";
@@ -110,5 +145,8 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutSQLSnoopToolStripMenuItem;
+        private System.Windows.Forms.ListBox lstDatabases;
+        private System.Windows.Forms.Label lblDatabaseList;
+        private System.Windows.Forms.LinkLabel lnkRefreshDatabaseList;
     }
 }
