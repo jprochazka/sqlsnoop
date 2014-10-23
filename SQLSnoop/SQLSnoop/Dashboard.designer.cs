@@ -37,9 +37,22 @@
             this.lstDatabases = new System.Windows.Forms.ListBox();
             this.lblDatabaseList = new System.Windows.Forms.Label();
             this.lnkRefreshDatabaseList = new System.Windows.Forms.LinkLabel();
-            this.lblVersion = new System.Windows.Forms.Label();
+            this.lblSqlServerVersion = new System.Windows.Forms.Label();
             this.lblSqlServerName = new System.Windows.Forms.Label();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabSqlServer = new System.Windows.Forms.TabPage();
+            this.tabDatabase = new System.Windows.Forms.TabPage();
+            this.dgvDatabaseFiles = new System.Windows.Forms.DataGridView();
+            this.lblDatabaseCompatibility = new System.Windows.Forms.Label();
+            this.lblDatabaseCreated = new System.Windows.Forms.Label();
+            this.lblDatabaseOwner = new System.Windows.Forms.Label();
+            this.lblDatabaseSize = new System.Windows.Forms.Label();
+            this.lblDatabaseName = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabSqlServer.SuspendLayout();
+            this.tabDatabase.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDatabaseFiles)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -98,6 +111,7 @@
             this.lstDatabases.Name = "lstDatabases";
             this.lstDatabases.Size = new System.Drawing.Size(169, 459);
             this.lstDatabases.TabIndex = 1;
+            this.lstDatabases.SelectedIndexChanged += new System.EventHandler(this.lstDatabases_SelectedIndexChanged);
             // 
             // lblDatabaseList
             // 
@@ -120,32 +134,123 @@
             this.lnkRefreshDatabaseList.Text = "Refresh";
             this.lnkRefreshDatabaseList.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkRefreshDatabaseList_LinkClicked);
             // 
-            // lblVersion
+            // lblSqlServerVersion
             // 
-            this.lblVersion.AutoSize = true;
-            this.lblVersion.Location = new System.Drawing.Point(198, 67);
-            this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(52, 13);
-            this.lblVersion.TabIndex = 8;
-            this.lblVersion.Text = "lblVersion";
+            this.lblSqlServerVersion.AutoSize = true;
+            this.lblSqlServerVersion.Location = new System.Drawing.Point(6, 24);
+            this.lblSqlServerVersion.Name = "lblSqlServerVersion";
+            this.lblSqlServerVersion.Size = new System.Drawing.Size(268, 13);
+            this.lblSqlServerVersion.TabIndex = 8;
+            this.lblSqlServerVersion.Text = "Database information will be available once connected.";
             // 
             // lblSqlServerName
             // 
             this.lblSqlServerName.AutoSize = true;
             this.lblSqlServerName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSqlServerName.Location = new System.Drawing.Point(198, 47);
+            this.lblSqlServerName.Location = new System.Drawing.Point(6, 3);
             this.lblSqlServerName.Name = "lblSqlServerName";
-            this.lblSqlServerName.Size = new System.Drawing.Size(121, 17);
+            this.lblSqlServerName.Size = new System.Drawing.Size(210, 17);
             this.lblSqlServerName.TabIndex = 7;
-            this.lblSqlServerName.Text = "lblSqlServerName";
+            this.lblSqlServerName.Text = "Not connected to a SQL Server.";
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabSqlServer);
+            this.tabControl1.Controls.Add(this.tabDatabase);
+            this.tabControl1.Location = new System.Drawing.Point(196, 47);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(740, 459);
+            this.tabControl1.TabIndex = 9;
+            // 
+            // tabSqlServer
+            // 
+            this.tabSqlServer.Controls.Add(this.lblSqlServerVersion);
+            this.tabSqlServer.Controls.Add(this.lblSqlServerName);
+            this.tabSqlServer.Location = new System.Drawing.Point(4, 22);
+            this.tabSqlServer.Name = "tabSqlServer";
+            this.tabSqlServer.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSqlServer.Size = new System.Drawing.Size(732, 433);
+            this.tabSqlServer.TabIndex = 0;
+            this.tabSqlServer.Text = "SQL Server";
+            this.tabSqlServer.UseVisualStyleBackColor = true;
+            // 
+            // tabDatabase
+            // 
+            this.tabDatabase.Controls.Add(this.dgvDatabaseFiles);
+            this.tabDatabase.Controls.Add(this.lblDatabaseCompatibility);
+            this.tabDatabase.Controls.Add(this.lblDatabaseCreated);
+            this.tabDatabase.Controls.Add(this.lblDatabaseOwner);
+            this.tabDatabase.Controls.Add(this.lblDatabaseSize);
+            this.tabDatabase.Controls.Add(this.lblDatabaseName);
+            this.tabDatabase.Location = new System.Drawing.Point(4, 22);
+            this.tabDatabase.Name = "tabDatabase";
+            this.tabDatabase.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDatabase.Size = new System.Drawing.Size(732, 433);
+            this.tabDatabase.TabIndex = 1;
+            this.tabDatabase.Text = "Database";
+            this.tabDatabase.UseVisualStyleBackColor = true;
+            // 
+            // dgvDatabaseFiles
+            // 
+            this.dgvDatabaseFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvDatabaseFiles.Location = new System.Drawing.Point(9, 98);
+            this.dgvDatabaseFiles.Name = "dgvDatabaseFiles";
+            this.dgvDatabaseFiles.Size = new System.Drawing.Size(717, 97);
+            this.dgvDatabaseFiles.TabIndex = 10;
+            // 
+            // lblDatabaseCompatibility
+            // 
+            this.lblDatabaseCompatibility.AutoSize = true;
+            this.lblDatabaseCompatibility.Location = new System.Drawing.Point(6, 72);
+            this.lblDatabaseCompatibility.Name = "lblDatabaseCompatibility";
+            this.lblDatabaseCompatibility.Size = new System.Drawing.Size(138, 13);
+            this.lblDatabaseCompatibility.TabIndex = 4;
+            this.lblDatabaseCompatibility.Text = "Compatability: Not Available";
+            // 
+            // lblDatabaseCreated
+            // 
+            this.lblDatabaseCreated.AutoSize = true;
+            this.lblDatabaseCreated.Location = new System.Drawing.Point(6, 56);
+            this.lblDatabaseCreated.Name = "lblDatabaseCreated";
+            this.lblDatabaseCreated.Size = new System.Drawing.Size(113, 13);
+            this.lblDatabaseCreated.TabIndex = 3;
+            this.lblDatabaseCreated.Text = "Created: Not Available";
+            // 
+            // lblDatabaseOwner
+            // 
+            this.lblDatabaseOwner.AutoSize = true;
+            this.lblDatabaseOwner.Location = new System.Drawing.Point(6, 40);
+            this.lblDatabaseOwner.Name = "lblDatabaseOwner";
+            this.lblDatabaseOwner.Size = new System.Drawing.Size(107, 13);
+            this.lblDatabaseOwner.TabIndex = 2;
+            this.lblDatabaseOwner.Text = "Owner: Not Available";
+            // 
+            // lblDatabaseSize
+            // 
+            this.lblDatabaseSize.AutoSize = true;
+            this.lblDatabaseSize.Location = new System.Drawing.Point(6, 24);
+            this.lblDatabaseSize.Name = "lblDatabaseSize";
+            this.lblDatabaseSize.Size = new System.Drawing.Size(96, 13);
+            this.lblDatabaseSize.TabIndex = 1;
+            this.lblDatabaseSize.Text = "Size: Not Available";
+            // 
+            // lblDatabaseName
+            // 
+            this.lblDatabaseName.AutoSize = true;
+            this.lblDatabaseName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDatabaseName.Location = new System.Drawing.Point(6, 3);
+            this.lblDatabaseName.Name = "lblDatabaseName";
+            this.lblDatabaseName.Size = new System.Drawing.Size(247, 17);
+            this.lblDatabaseName.TabIndex = 0;
+            this.lblDatabaseName.Text = "Select a database to view information.";
             // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(948, 520);
-            this.Controls.Add(this.lblVersion);
-            this.Controls.Add(this.lblSqlServerName);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.lnkRefreshDatabaseList);
             this.Controls.Add(this.lblDatabaseList);
             this.Controls.Add(this.lstDatabases);
@@ -155,6 +260,12 @@
             this.Text = "SQL Snoop";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabSqlServer.ResumeLayout(false);
+            this.tabSqlServer.PerformLayout();
+            this.tabDatabase.ResumeLayout(false);
+            this.tabDatabase.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDatabaseFiles)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -171,7 +282,16 @@
         private System.Windows.Forms.ListBox lstDatabases;
         private System.Windows.Forms.Label lblDatabaseList;
         private System.Windows.Forms.LinkLabel lnkRefreshDatabaseList;
-        private System.Windows.Forms.Label lblVersion;
+        private System.Windows.Forms.Label lblSqlServerVersion;
         private System.Windows.Forms.Label lblSqlServerName;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabSqlServer;
+        private System.Windows.Forms.TabPage tabDatabase;
+        private System.Windows.Forms.Label lblDatabaseCompatibility;
+        private System.Windows.Forms.Label lblDatabaseCreated;
+        private System.Windows.Forms.Label lblDatabaseOwner;
+        private System.Windows.Forms.Label lblDatabaseSize;
+        private System.Windows.Forms.Label lblDatabaseName;
+        private System.Windows.Forms.DataGridView dgvDatabaseFiles;
     }
 }

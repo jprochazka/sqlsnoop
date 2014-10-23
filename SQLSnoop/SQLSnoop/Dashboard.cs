@@ -38,7 +38,7 @@ namespace SQLSnoop
 
                 // Set label text.
                 lblSqlServerName.Text = sqlServerInfo.ServerName;
-                lblVersion.Text = "Microsoft SQL Server " + sqlServerInfo.ProductVersion + " " + sqlServerInfo.ProductLevel + " " + sqlServerInfo.Edition;
+                lblSqlServerVersion.Text = "Microsoft SQL Server " + sqlServerInfo.ProductVersion + " " + sqlServerInfo.ProductLevel + " " + sqlServerInfo.Edition;
             }
         }
 
@@ -46,6 +46,60 @@ namespace SQLSnoop
         {
             // Repopulate CheckedListBox with a list of databases from the selected SQL Server.
             PopulateDatabaseList();
+        }
+
+        private void lstDatabases_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Select the database tab automatically.
+            tabControl1.SelectedTab = tabDatabase;
+
+            // Get information pertaining to the selected database.
+            using (var conn = new SqlConnection(connString))
+            using (var cmd = new SqlCommand("sp_helpdb ", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                cmd.Parameters.Add("@dbname", SqlDbType.NVarChar, 128).Value = lstDatabases.SelectedItem;
+                try
+                {
+                    conn.Open();
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            // Populate labels with database information.
+                            lblDatabaseName.Text = dr["name"].ToString().Trim();
+                            lblDatabaseSize.Text = "Size: " + dr["db_size"].ToString().Trim();
+                            lblDatabaseOwner.Text = "Owner: " + dr["owner"].ToString().Trim();
+                            lblDatabaseCreated.Text = "Created: " + dr["created"].ToString().Trim();
+                            lblDatabaseCompatibility.Text = "Compatability: " + (byte)dr["compatibility_level"];
+                        }
+                        
+                        dr.NextResult();
+
+                        // Populate the DataGridView with database file information.
+                        BindingSource bs = new BindingSource();
+                        bs.DataSource = dr;
+                        dgvDatabaseFiles.DataSource = bs;
+
+                        // Rename the DataGridView columns.
+                        dgvDatabaseFiles.Columns["name"].HeaderText = "Name";
+                        dgvDatabaseFiles.Columns["fileid"].HeaderText = "File ID";
+                        dgvDatabaseFiles.Columns["filename"].HeaderText = "File Name";
+                        dgvDatabaseFiles.Columns["filegroup"].HeaderText = "File Group";
+                        dgvDatabaseFiles.Columns["size"].HeaderText = "Size";
+                        dgvDatabaseFiles.Columns["maxsize"].HeaderText = "Maximum Size";
+                        dgvDatabaseFiles.Columns["growth"].HeaderText = "Growth";
+                        dgvDatabaseFiles.Columns["usage"].HeaderText = "Usage";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Database List Population Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
         }
 
         #region MenuStrip
@@ -70,7 +124,7 @@ namespace SQLSnoop
 
                 // Set label text.
                 lblSqlServerName.Text = sqlServerInfo.ServerName;
-                lblVersion.Text = "Microsoft SQL Server " + sqlServerInfo.ProductVersion + " " + sqlServerInfo.ProductLevel + " " + sqlServerInfo.Edition;
+                lblSqlServerVersion.Text = "Microsoft SQL Server " + sqlServerInfo.ProductVersion + " " + sqlServerInfo.ProductLevel + " " + sqlServerInfo.Edition;
             }
         }
 
@@ -150,15 +204,20 @@ namespace SQLSnoop
                             sqlServerInfo.FilestreamConfiguredLevel = (int)dr["FilestreamConfiguredLevel"];
                             sqlServerInfo.FilestreamEffectiveLevel = (int)dr["FilestreamEffectiveLevel"];
                             sqlServerInfo.FilestreamShareName = (string)dr["FilestreamShareName"];
-                            sqlServerInfo.HadrManagerStatus = (int)dr["HadrManagerStatus"];
-                            sqlServerInfo.InstanceName = (string)dr["InstanceName"];
+                            if (!string.IsNullOrEmpty(dr["HadrManagerStatus"].ToString()))
+                                sqlServerInfo.HadrManagerStatus = (int)dr["HadrManagerStatus"];
+                            if (!string.IsNullOrEmpty(dr["InstanceName"].ToString()))
+                                sqlServerInfo.InstanceName = (string)dr["InstanceName"];
                             sqlServerInfo.IsClustered = (int)dr["IsClustered"];
                             sqlServerInfo.IsFullTextInstalled = (int)dr["IsFullTextInstalled"];
-                            sqlServerInfo.IsHadrEnabled = (int)dr["IsHadrEnabled"];
+                            if (!string.IsNullOrEmpty(dr["IsHadrEnabled"].ToString()))
+                                sqlServerInfo.IsHadrEnabled = (int)dr["IsHadrEnabled"];
                             sqlServerInfo.IsIntegratedSecurityOnly = (int)dr["IsIntegratedSecurityOnly"];
-                            sqlServerInfo.IsLocalDB = (int)dr["IsLocalDB"];
+                            if (!string.IsNullOrEmpty(dr["IsHadrEnabled"].ToString()))
+                                sqlServerInfo.IsLocalDB = (int)dr["IsLocalDB"];
                             sqlServerInfo.IsSingleUser = (int)dr["IsSingleUser"];
-                            sqlServerInfo.IsXTPSupported = (int)dr["IsXTPSupported"];
+                            if (!string.IsNullOrEmpty(dr["IsHadrEnabled"].ToString()))
+                                sqlServerInfo.IsXTPSupported = (int)dr["IsXTPSupported"];
                             sqlServerInfo.LCID = (int)dr["LCID"];
                             sqlServerInfo.MachineName = (string)dr["MachineName"];
                             sqlServerInfo.ProcessID = (int)dr["ProcessID"];
