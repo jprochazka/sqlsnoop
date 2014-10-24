@@ -2,7 +2,11 @@
 using System.Data;
 using System.Data.Sql;
 using System.Data.SqlClient;
+using System.IO;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using System.Linq;
+using System.Diagnostics;
 
 namespace SQLSnoop
 {
@@ -14,7 +18,30 @@ namespace SQLSnoop
         {
             InitializeComponent();
 
-            // Populate the server name ComboBox.
+            // Populate the server name ComboBox with all saved connections from the appdata.xml file. 
+            try
+            {
+                string path = Application.UserAppDataPath + @"\appdata.xml";
+                if (File.Exists(path))
+                {
+                    XDocument appDataXml = XDocument.Load(path);
+                    var connections = appDataXml.Descendants("connection").OrderByDescending(x => x.Element("lastConnection").Value).Select(x => new
+                    {
+                        serverName = x.Element("serverName").Value
+                    });
+
+                    foreach (var connection in connections)
+                    {
+                        cmbServerName.Items.Add(connection.serverName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "XML File Read Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            // Add the "Search for SQL Server Instances" selection.
             cmbServerName.Items.Add("<Search for SQL Server Instances>");
 
             // Populate the authentication ComboBox.
@@ -32,7 +59,7 @@ namespace SQLSnoop
                 lblPassword.Enabled = false;
                 txtUserName.Enabled = false;
                 txtPassword.Enabled = false;
-                chkRemeber.Enabled = false;
+                chkRemember.Enabled = false;
             }
             else
             {
@@ -40,7 +67,7 @@ namespace SQLSnoop
                 lblPassword.Enabled = true;
                 txtUserName.Enabled = true;
                 txtPassword.Enabled = true;
-                chkRemeber.Enabled = true;
+                chkRemember.Enabled = true;
             }
         }
 
@@ -54,7 +81,7 @@ namespace SQLSnoop
                 // Remove all currently listed items from the ComboBox.
                 cmbServerName.Items.Clear();
 
-                // Add located servers to the ComboBox.
+                // Add located servers to the ComboBox if they are not already in the list.
                 DataTable servers = SqlDataSourceEnumerator.Instance.GetDataSources();
                 for (int i = 0; i < servers.Rows.Count; i++)
                 {
@@ -101,7 +128,97 @@ namespace SQLSnoop
         {
             // Build the connectionString to be used to connect to the SQL Server.
             if (CreateConnectionString())
+            {
+                // Save connection data that is to remain persitant.
+                SaveConnection();
+
+                // Close this form.
                 this.Close();
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        #region Functions
+
+        private void SaveConnection()
+        {
+            string path = Application.UserAppDataPath + @"\appdata.xml";
+
+            // Create the users application data file if it does not exist.
+            if (!File.Exists(path))
+            {
+                try
+                {
+                    XElement appDataXml = new XElement("connections");
+                    XDocument xmlDoc = new XDocument(new XDeclaration("1.0", "utf-8", "true"), appDataXml);
+                    xmlDoc.Save(path);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "XML File Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            
+            // Add the current connection information to the users application data file.
+            string userName = (!chkRemember.Checked || cmbAuthentication.Text == "Windows Authentication" ? "" : txtUserName.Text);
+            string password = (!chkRemember.Checked || cmbAuthentication.Text == "Windows Authentication" ? "" : txtPassword.Text);
+
+            // Check if the serverName already exists in the XML file.
+            bool serverNameExists = false;
+            try
+            {
+                XDocument appDataXml = XDocument.Load(path);
+                serverNameExists = appDataXml.Descendants("connection").Where(x => x.Element("serverName").Value == cmbServerName.Text).Any();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "XML File Read Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            
+            // If the serverName already update the connection information.
+            if (serverNameExists)
+            {
+                try
+                {
+                    XDocument appDataXml = XDocument.Load(path);
+                    XElement existingConnection = appDataXml.Descendants("connection").Where(x => x.Element("serverName").Value == cmbServerName.Text).FirstOrDefault();
+                    existingConnection.Element("sqlAuthentication").Value = (cmbAuthentication.Text == "SQL Server Authentication" ? "true" : "false");
+                    existingConnection.Element("userName").Value = userName;
+                    existingConnection.Element("password").Value = password;
+                    existingConnection.Element("lastConnection").Value = DateTime.Now.ToString();
+                    appDataXml.Save(path);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "XML File Update Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                
+            }
+            else
+            {
+                try
+                {
+                    // Insert new connection information.
+                    XDocument appDataXml = XDocument.Load(path);
+                    XElement newConnection = new XElement("connection");
+                    newConnection.SetElementValue("serverName", cmbServerName.Text);
+                    newConnection.SetElementValue("sqlAuthentication", (cmbAuthentication.Text == "SQL Server Authentication" ? "true" : "false"));
+                    newConnection.SetElementValue("userName", userName);
+                    newConnection.SetElementValue("password", password);
+                    newConnection.SetElementValue("lastConnection", DateTime.Now.ToString());
+                    appDataXml.Element("connections").Add(newConnection);
+                    appDataXml.Save(path);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "XML File Insert Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                
+            }
         }
 
         private bool CreateConnectionString()
@@ -133,9 +250,7 @@ namespace SQLSnoop
             return true;
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+        #endregion
+
     }
 }

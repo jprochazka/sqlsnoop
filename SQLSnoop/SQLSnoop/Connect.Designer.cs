@@ -32,7 +32,7 @@
             this.lblAuthentication = new System.Windows.Forms.Label();
             this.lblUserName = new System.Windows.Forms.Label();
             this.lblPassword = new System.Windows.Forms.Label();
-            this.chkRemeber = new System.Windows.Forms.CheckBox();
+            this.chkRemember = new System.Windows.Forms.CheckBox();
             this.cmbAuthentication = new System.Windows.Forms.ComboBox();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.txtUserName = new System.Windows.Forms.TextBox();
@@ -81,24 +81,25 @@
             this.lblPassword.TabIndex = 4;
             this.lblPassword.Text = "Password:";
             // 
-            // chkRemeber
+            // chkRemember
             // 
-            this.chkRemeber.AutoSize = true;
-            this.chkRemeber.Enabled = false;
-            this.chkRemeber.Location = new System.Drawing.Point(122, 156);
-            this.chkRemeber.Name = "chkRemeber";
-            this.chkRemeber.Size = new System.Drawing.Size(126, 17);
-            this.chkRemeber.TabIndex = 6;
-            this.chkRemeber.Text = "Remember Password";
-            this.chkRemeber.UseVisualStyleBackColor = true;
+            this.chkRemember.AutoSize = true;
+            this.chkRemember.Enabled = false;
+            this.chkRemember.Location = new System.Drawing.Point(122, 156);
+            this.chkRemember.Name = "chkRemember";
+            this.chkRemember.Size = new System.Drawing.Size(126, 17);
+            this.chkRemember.TabIndex = 5;
+            this.chkRemember.Text = "Remember Password";
+            this.chkRemember.UseVisualStyleBackColor = true;
             // 
             // cmbAuthentication
             // 
+            this.cmbAuthentication.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbAuthentication.FormattingEnabled = true;
             this.cmbAuthentication.Location = new System.Drawing.Point(101, 74);
             this.cmbAuthentication.Name = "cmbAuthentication";
             this.cmbAuthentication.Size = new System.Drawing.Size(312, 21);
-            this.cmbAuthentication.TabIndex = 7;
+            this.cmbAuthentication.TabIndex = 2;
             this.cmbAuthentication.SelectedIndexChanged += new System.EventHandler(this.cmbAuthentication_SelectedIndexChanged);
             // 
             // txtPassword
@@ -106,8 +107,9 @@
             this.txtPassword.Enabled = false;
             this.txtPassword.Location = new System.Drawing.Point(122, 127);
             this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(266, 20);
-            this.txtPassword.TabIndex = 8;
+            this.txtPassword.TabIndex = 4;
             // 
             // txtUserName
             // 
@@ -115,7 +117,7 @@
             this.txtUserName.Location = new System.Drawing.Point(122, 101);
             this.txtUserName.Name = "txtUserName";
             this.txtUserName.Size = new System.Drawing.Size(266, 20);
-            this.txtUserName.TabIndex = 9;
+            this.txtUserName.TabIndex = 3;
             // 
             // label1
             // 
@@ -135,7 +137,7 @@
             this.cmbServerName.Location = new System.Drawing.Point(101, 48);
             this.cmbServerName.Name = "cmbServerName";
             this.cmbServerName.Size = new System.Drawing.Size(312, 21);
-            this.cmbServerName.TabIndex = 12;
+            this.cmbServerName.TabIndex = 1;
             this.cmbServerName.SelectedIndexChanged += new System.EventHandler(this.cmbServerName_SelectedIndexChanged);
             // 
             // btnTest
@@ -143,7 +145,7 @@
             this.btnTest.Location = new System.Drawing.Point(101, 179);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(100, 23);
-            this.btnTest.TabIndex = 13;
+            this.btnTest.TabIndex = 6;
             this.btnTest.Text = "Test Connection";
             this.btnTest.UseVisualStyleBackColor = true;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
@@ -153,7 +155,7 @@
             this.btnConnect.Location = new System.Drawing.Point(207, 179);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(100, 23);
-            this.btnConnect.TabIndex = 14;
+            this.btnConnect.TabIndex = 7;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
@@ -163,7 +165,7 @@
             this.btnCancel.Location = new System.Drawing.Point(313, 179);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(100, 23);
-            this.btnCancel.TabIndex = 15;
+            this.btnCancel.TabIndex = 8;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -181,7 +183,7 @@
             this.Controls.Add(this.txtUserName);
             this.Controls.Add(this.txtPassword);
             this.Controls.Add(this.cmbAuthentication);
-            this.Controls.Add(this.chkRemeber);
+            this.Controls.Add(this.chkRemember);
             this.Controls.Add(this.lblPassword);
             this.Controls.Add(this.lblUserName);
             this.Controls.Add(this.lblAuthentication);
@@ -204,7 +206,7 @@
         private System.Windows.Forms.Label lblAuthentication;
         private System.Windows.Forms.Label lblUserName;
         private System.Windows.Forms.Label lblPassword;
-        private System.Windows.Forms.CheckBox chkRemeber;
+        private System.Windows.Forms.CheckBox chkRemember;
         private System.Windows.Forms.ComboBox cmbAuthentication;
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.TextBox txtUserName;
