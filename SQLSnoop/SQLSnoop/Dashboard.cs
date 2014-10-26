@@ -10,12 +10,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace SQLSnoop
 {
     public partial class Dashboard : Form
     {
         public string connString;
+        private SqlServerInformation sqlServerInfo = new SqlServerInformation();
 
         public Dashboard()
         {
@@ -34,11 +36,15 @@ namespace SQLSnoop
                 PopulateDatabaseList();
 
                 // Get SQL Server information from the SQL Server itself.
-                var sqlServerInfo = GetSqlServerInformation();
+                sqlServerInfo = GetSqlServerInformation();
 
                 // Set label text.
                 lblSqlServerName.Text = sqlServerInfo.ServerName;
                 lblSqlServerVersion.Text = "Microsoft SQL Server " + sqlServerInfo.ProductVersion + " " + sqlServerInfo.ProductLevel + " " + sqlServerInfo.Edition;
+
+                // Start the SQL Server CPU utilization timer.
+                tmrSqlServerCpu.Start();
+                tmrSqlServerCpu_Tick(null, EventArgs.Empty);
             }
         }
 
@@ -78,17 +84,17 @@ namespace SQLSnoop
                         // Populate the DataGridView with database file information.
                         BindingSource bs = new BindingSource();
                         bs.DataSource = dr;
-                        dgvDatabaseFiles.DataSource = bs;
+                        dgdDatabaseFiles.DataSource = bs;
 
                         // Rename the DataGridView columns.
-                        dgvDatabaseFiles.Columns["name"].HeaderText = "Name";
-                        dgvDatabaseFiles.Columns["fileid"].HeaderText = "File ID";
-                        dgvDatabaseFiles.Columns["filename"].HeaderText = "File Name";
-                        dgvDatabaseFiles.Columns["filegroup"].HeaderText = "File Group";
-                        dgvDatabaseFiles.Columns["size"].HeaderText = "Size";
-                        dgvDatabaseFiles.Columns["maxsize"].HeaderText = "Maximum Size";
-                        dgvDatabaseFiles.Columns["growth"].HeaderText = "Growth";
-                        dgvDatabaseFiles.Columns["usage"].HeaderText = "Usage";
+                        dgdDatabaseFiles.Columns["name"].HeaderText = "Name";
+                        dgdDatabaseFiles.Columns["fileid"].HeaderText = "File ID";
+                        dgdDatabaseFiles.Columns["filename"].HeaderText = "File Name";
+                        dgdDatabaseFiles.Columns["filegroup"].HeaderText = "File Group";
+                        dgdDatabaseFiles.Columns["size"].HeaderText = "Size";
+                        dgdDatabaseFiles.Columns["maxsize"].HeaderText = "Maximum Size";
+                        dgdDatabaseFiles.Columns["growth"].HeaderText = "Growth";
+                        dgdDatabaseFiles.Columns["usage"].HeaderText = "Usage";
                     }
                 }
                 catch (Exception ex)
@@ -180,7 +186,7 @@ namespace SQLSnoop
         {
             var sqlServerInfo = new SqlServerInformation();
 
-            // Load the SQL query stored in the file named SQLServer-Information.sql.
+            // Load the SQL query stored in the file named SqlServerInformation.sql.
             string sqlScript = File.ReadAllText(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\Sqlscripts\SqlServerInformation.sql");
 
             using (var conn = new SqlConnection(connString))
@@ -249,6 +255,84 @@ namespace SQLSnoop
                 }
             }
             return sqlServerInfo;
+        }
+
+        #endregion
+
+        #region Timers
+
+        private void tmrSqlServerCpu_Tick(object sender, EventArgs e)
+        {
+            List<SqlServerCpuUtilization> sqlCpuUtilizations = new List<SqlServerCpuUtilization>();
+            string sqlScript = null;
+
+            // Choose script depending on the version of the SQL Server the application is connected to.
+            if (Convert.ToInt32(sqlServerInfo.ProductVersion.Substring(0, sqlServerInfo.ProductVersion.IndexOf("."))) > 9)
+            {
+                // Load the SQL query stored in the file named SqlServerCpuUtilization2008.sql.
+                sqlScript = File.ReadAllText(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\Sqlscripts\SqlServerCpuUtilization2008.sql");
+            }
+            else
+            {
+                // Load the SQL query stored in the file named SqlServerCpuUtilization2005.sql.
+                sqlScript = File.ReadAllText(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\Sqlscripts\SqlServerCpuUtilization2005.sql");
+            }
+            
+            using (var conn = new SqlConnection(connString))
+            using (var cmd = new SqlCommand(sqlScript, conn))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            SqlServerCpuUtilization sqlCpuUtilization = new SqlServerCpuUtilization();
+                            sqlCpuUtilization.SqlCpuUtilization = (int)dr["SQL Server Process CPU Utilization"];
+                            sqlCpuUtilization.SystemIdleProcess = (int)dr["System Idle Process"];
+                            sqlCpuUtilization.OtherCpuUtilization = (int)dr["Other Process CPU Utilization"];
+                            sqlCpuUtilization.EventTime = (DateTime)dr["Event Time"];
+                            sqlCpuUtilizations.Add(sqlCpuUtilization);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "SQL Server CPU Utilization Retrieval", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    tmrSqlServerCpu.Stop();
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+                // Assign CPU utilization percentages to the appropriate TextBox.
+                txtSqlCpuUtilization.Text = sqlCpuUtilizations.FirstOrDefault().SqlCpuUtilization.ToString();
+                txtSystemIdleProcess.Text = sqlCpuUtilizations.FirstOrDefault().SystemIdleProcess.ToString();
+                txtOtherCpuUtilization.Text = sqlCpuUtilizations.FirstOrDefault().OtherCpuUtilization.ToString();
+
+                // Populate the line chart.
+                chart1.Series["SQL Server Process"].Points.Clear();
+                chart1.Series["System Idle Process"].Points.Clear();
+                chart1.Series["Other Processes"].Points.Clear();
+
+                foreach (SqlServerCpuUtilization sqlCpuUtilization in sqlCpuUtilizations.OrderBy(s => s.EventTime))
+                {
+                    chart1.Series["SQL Server Process"].Points.AddXY(sqlCpuUtilization.EventTime.ToString("h:mm tt"), sqlCpuUtilization.SqlCpuUtilization);
+                    chart1.Series["System Idle Process"].Points.AddXY(sqlCpuUtilization.EventTime.ToString("h:mm tt"), sqlCpuUtilization.SystemIdleProcess);
+                    chart1.Series["Other Processes"].Points.AddXY(sqlCpuUtilization.EventTime.ToString("h:mm tt"), sqlCpuUtilization.OtherCpuUtilization);
+                }
+
+                chart1.Series["SQL Server Process"].ChartType = SeriesChartType.FastLine;
+                chart1.Series["SQL Server Process"].Color = Color.Red;
+
+                chart1.Series["System Idle Process"].ChartType = SeriesChartType.FastLine;
+                chart1.Series["System Idle Process"].Color = Color.Green;
+
+                chart1.Series["Other Processes"].ChartType = SeriesChartType.FastLine;
+                chart1.Series["Other Processes"].Color = Color.Yellow;
+            }
         }
 
         #endregion
